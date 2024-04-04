@@ -4,17 +4,34 @@ let observer = new MutationObserver((mutations) => {
         let iframes = document.querySelectorAll('iframe');
         Array.from(iframes).forEach((iframe) => {
           if (/^scriptaHR0/.test(iframe.id)) {
-            iframe.style.display = 'block';
-            console.log("iframe trouvé et modifié:", iframe.id);
+            console.log("iframe trouvé:", iframe);
+            setTimeout(() => {
+              // send command to this iframe
+              console.log("start moving player");
+              iframe.contentWindow.postMessage({
+                type: "onPlayerMove",
+                body: {text: "WA.player.moveTo(100,100)"},
+              }, "*");
+              console.log("message sent")
+              
+            }, 3000);
+            
             observer.disconnect();
+            
+            
           }
         });
       }
     });
   });
   
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
+  window.addEventListener("message", function(event) {
+    console.log("message received", event.data);
   });
+  
+  observer.observe(document.body, {
+  childList: true,
+  subtree: true
+});
+
   
